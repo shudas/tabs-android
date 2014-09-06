@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <dimen name="marginTop">16dp</dimen>
+  <dimen name="margin">4dp</dimen>
+  <dimen name="picSize">100dp</dimen>
+  <dimen name="nameSize">18sp</dimen>
+</resources>

@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">Tabs</string>
+  <string name="image_desc">Image of this person</string>
+  <string name="catchup_desc">Settings for catching up with this person</string>
+  <string name="new_tab_desc">Adds a new tab for this person</string>
 </resources>
