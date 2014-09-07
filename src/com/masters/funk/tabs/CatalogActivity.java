@@ -7,9 +7,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import com.masters.funk.tabs.helpers.CatalogAdapter;
@@ -47,6 +49,7 @@ public class CatalogActivity extends ListActivity {
     }
     adapter = new CatalogAdapter(this, R.layout.item, persons);
     setListAdapter(adapter);
+    registerForContextMenu(getListView());
   }
 
   @Override
@@ -65,23 +68,34 @@ public class CatalogActivity extends ListActivity {
   }
 
   @Override
+  public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo)
+  {
+    super.onCreateContextMenu(menu, v, menuInfo);
+    menu.setHeaderTitle("Are you sure you wish to delete?");
+    getMenuInflater().inflate(R.menu.menu_context, menu);
+  }
+
+  @Override
+  public boolean onContextItemSelected(MenuItem item) {
+    //  info.position will give the index of selected item
+    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+    switch (item.getItemId()) {
+      case R.id.deleteContext:
+        Person person = adapter.getItem(info.position);
+        db.deletePerson(person.getId());
+        adapter.remove(person);
+        return true;
+      default:
+        return super.onContextItemSelected(item);
+    }
+  }
+
+    @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     // Handle presses on the action bar items
     switch (item.getItemId()) {
       case R.id.action_add_person:
-        // DialogFragment.show() will take care of adding the fragment
-        // in a transaction.  We also want to remove any currently showing
-        // dialog, so make our own transaction and take care of that here.
-        DialogFragment newFragment =
-          new NewPersonDialogFragment(getString(R.string.add_person_dialog_title),
-                                      R.layout.dialog_new_person,
-                                      new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                          newPersonOnClick(dialog, which);
-                                        }
-                                      });
-        newFragment.show(getFragmentManager(), "new person");
+        createEditPerson(null);
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -100,6 +114,22 @@ public class CatalogActivity extends ListActivity {
       adapter.insert(person, 0);
       adapter.notifyDataSetChanged();
     }
+  }
+
+  private void createEditPerson(Person person) {
+    // DialogFragment.show() will take care of adding the fragment
+    // in a transaction.  We also want to remove any currently showing
+    // dialog, so make our own transaction and take care of that here.
+    DialogFragment newFragment =
+      new CustomDialogFragment(getString(R.string.add_person_dialog_title),
+                               R.layout.dialog_new_person,
+                               new DialogInterface.OnClickListener() {
+                                 @Override
+                                 public void onClick(DialogInterface dialog, int which) {
+                                   newPersonOnClick(dialog, which);
+                                 }
+                               });
+    newFragment.show(getFragmentManager(), "new person");
   }
 
   @Override

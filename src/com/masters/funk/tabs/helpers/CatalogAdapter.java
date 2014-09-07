@@ -44,6 +44,8 @@ public class CatalogAdapter extends ArrayAdapter<Person> {
     if (person != null) {
       TextView name = (TextView) v.findViewById(R.id.tabText);
       name.setText(person.getName());
+      name.setTextSize(18);
+      v.findViewById(R.id.updateTime).setVisibility(View.GONE);
     }
     return v;
   }

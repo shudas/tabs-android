@@ -2,21 +2,22 @@ package com.masters.funk.tabs;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.app.ListActivity;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.Toast;
 import com.masters.funk.tabs.helpers.CardAdapter;
 import com.masters.funk.tabs.helpers.DatabaseHelper;
@@ -57,6 +58,7 @@ public class CardActivity extends ListActivity {
     tabs = db.getTabsPerPerson(person.getId());
     adapter = new CardAdapter(this, R.layout.item, tabs);
     setListAdapter(adapter);
+    registerForContextMenu(getListView());
   }
 
   @Override
@@ -66,12 +68,37 @@ public class CardActivity extends ListActivity {
   }
 
   @Override
+  public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo)
+  {
+    super.onCreateContextMenu(menu, v, menuInfo);
+    menu.setHeaderTitle("Are you sure you wish to delete?");
+    getMenuInflater().inflate(R.menu.menu_context, menu);
+  }
+
+  @Override
+  public boolean onContextItemSelected(MenuItem item) {
+    //  info.position will give the index of selected item
+    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+    switch (item.getItemId()) {
+      case R.id.deleteContext:
+        Tab tab = adapter.getItem(info.position);
+        db.deleteTab(tab.getId());
+        adapter.remove(tab);
+        return true;
+      default:
+        return super.onContextItemSelected(item);
+    }
+  }
+
+  @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case R.id.action_catchup:
-        Toast.makeText(this, "Catch up selected!", Toast.LENGTH_SHORT).show();
+        CatchupDialogFragment df = new CatchupDialogFragment(getString(R.string.catchup_dialog_title), listener);
+        df.show(getFragmentManager(), "catchup");
+//        Toast.makeText(this, "Catch up selected!", Toast.LENGTH_SHORT).show();
         // Todo: Change this time
-        createScheduledNotification(10);
+//        createScheduledNotification(10);
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -101,13 +128,6 @@ public class CardActivity extends ListActivity {
     startActivityForResult(intent, 0);
   }
 
-  public void catchUpOnClick(DialogInterface dialog, int which) {
-    // store to db if pos, otherwise, close dialog
-    if (which == DialogInterface.BUTTON_POSITIVE) {
-
-    }
-  }
-
   private void createScheduledNotification(int secs)
   {
     // Get new calendar object and set the date to now
@@ -132,9 +152,24 @@ public class CardActivity extends ListActivity {
     alarmMgr.cancel(pendingIntent);
 
     alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                          30 * 10000,
+                          30 * 1000,
                           pendingIntent);
 
   }
 
+  DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+      // store to db if pos, otherwise, close dialog
+      if (which == DialogInterface.BUTTON_POSITIVE) {
+        RadioGroup radios = (RadioGroup) ((AlertDialog) dialog).findViewById(R.id.catchup_radios);
+        person.setCatchup(radios.getCheckedRadioButtonId());
+        // set the adapter person's unique id
+        db.updatePerson(person);
+        if (radios.getCheckedRadioButtonId() != R.id.catchup_rad_3) {
+          createScheduledNotification(15);
+        }
+      }
+    }
+  };
 }

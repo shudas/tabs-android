@@ -5,19 +5,20 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.widget.EditText;
+import android.util.Log;
+import android.view.View;
+import android.widget.SeekBar;
 
 /**
  *
  */
-public class NewPersonDialogFragment extends DialogFragment {
+public class CatchupDialogFragment extends DialogFragment {
+
   private String title;
-  private int layoutId;
   private DialogInterface.OnClickListener listener;
 
-  public NewPersonDialogFragment(String title, int layoutId, DialogInterface.OnClickListener listener) {
+  public CatchupDialogFragment(String title, DialogInterface.OnClickListener listener) {
     this.title = title;
-    this.layoutId = layoutId;
     this.listener = listener;
   }
 
@@ -25,10 +26,15 @@ public class NewPersonDialogFragment extends DialogFragment {
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     super.onCreateDialog(savedInstanceState);
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-    builder.setView(getActivity().getLayoutInflater().inflate(layoutId, null))
+    View mainView = getActivity().getLayoutInflater().inflate(R.layout.dialog_catchup, null);
+    builder.setView(mainView)
       .setTitle(title)
       .setPositiveButton("Add", listener)
       .setNegativeButton("Cancel", listener);
     return builder.create();
+  }
+
+  public void onCatchupRadioClick(View v) {
+
   }
 }

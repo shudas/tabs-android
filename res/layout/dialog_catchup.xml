@@ -1,9 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_margin="@dimen/marginTop"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-  <TextView android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+  <LinearLayout 
+          android:orientation="horizontal"
+          android:layout_width="fill_parent" 
+          android:layout_height="wrap_content">
+    <RadioGroup
+            android:id="@+id/catchup_radios"
+            android:orientation="vertical"
+            android:layout_width="wrap_content" android:layout_height="wrap_content">
+      <RadioButton
+              android:id="@+id/catchup_rad_0"
+              android:text="@string/catchup_rad_0"
+              android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+      <RadioButton
+              android:id="@+id/catchup_rad_1"
+              android:text="@string/catchup_rad_1"
+              android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+      <RadioButton
+              android:id="@+id/catchup_rad_2"
+              android:text="@string/catchup_rad_2"
+              android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+      <RadioButton
+              android:id="@+id/catchup_rad_3"
+              android:checked="true"
+              android:text="@string/catchup_rad_3"
+              android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    </RadioGroup>
+  </LinearLayout>
 </LinearLayout>

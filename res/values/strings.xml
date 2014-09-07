@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">Tabs</string>
+  <string name="app_name">Tidbits</string>
   <string name="image_desc">Image of this person</string>
   <string name="catchup_desc">Settings for catching up with this person</string>
   <string name="new_tab_desc">Adds a new tab for this person</string>
@@ -11,6 +11,10 @@
   <string name="add_person_hint">Name</string>
   <string name="add_tab_hint">Write something</string>
   <string name="new_tab_title">New Tidbit</string>
+  <string name="catchup_rad_0">Frequently</string>
+  <string name="catchup_rad_1">Occasionally</string>
+  <string name="catchup_rad_2">Now and then</string>
+  <string name="catchup_rad_3">Never</string>
   <string name="long_string">This is a really long string. This will check how stuff performs with long strings.
     Long strings are going to be annoying for users to use. I am a long string. I am long. Like a you know what</string>
 </resources>
