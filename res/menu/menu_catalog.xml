@@ -4,6 +4,6 @@
   <!-- Search, should appear as action button -->
   <item android:id="@+id/action_add_person"
         android:icon="@drawable/new_tab"
-        android:title="@string/add_person"
+        android:title="@string/add_person_dialog_title"
         android:showAsAction="always" />
 </menu>

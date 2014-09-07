@@ -20,5 +20,11 @@
               android:name="android.support.PARENT_ACTIVITY"
               android:value="com.masters.funk.CatalogActivity" />
     </activity>
+    <activity android:name=".NewTabActivity"
+              android:parentActivityName=".CardActivity">
+      <meta-data
+              android:name="android.support.PARENT_ACTIVITY"
+              android:value="com.masters.funk.CardActivity" />
+    </activity>
   </application>
 </manifest>

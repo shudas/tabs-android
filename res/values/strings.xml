@@ -5,8 +5,12 @@
   <string name="catchup_desc">Settings for catching up with this person</string>
   <string name="new_tab_desc">Adds a new tab for this person</string>
   <string name="catalog_title">People</string>
-  <string name="add_person">Add a person</string>
+  <string name="add_person_dialog_title">Add a person</string>
+  <string name="add_tab_dialog_title">Add a tab</string>
+  <string name="catchup_dialog_title">Catch up setting</string>
   <string name="add_person_hint">Name</string>
+  <string name="add_tab_hint">Write something</string>
+  <string name="new_tab_title">New Tidbit</string>
   <string name="long_string">This is a really long string. This will check how stuff performs with long strings.
     Long strings are going to be annoying for users to use. I am a long string. I am long. Like a you know what</string>
 </resources>

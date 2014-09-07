@@ -70,7 +70,7 @@ public class Tab {
   }
 
   public Tab() {
-
+    setValues(-1, "", "", 0, 0);
   }
 
   /**
@@ -82,6 +82,10 @@ public class Tab {
    * @param personId the unique id of the person who is tied to this tab
    */
   public Tab(long id, String text, String tabIcon, long updateTimeMillis, long personId) {
+    setValues(id, text, tabIcon, updateTimeMillis, personId);
+  }
+
+  public void setValues(long id, String text, String tabIcon, long updateTimeMillis, long personId) {
     this.id = id;
     this.text = text;
     this.tabIcon = tabIcon;

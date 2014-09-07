@@ -1,4 +1,4 @@
-package com.masters.funk.tabs;
+package com.masters.funk.tabs.helpers;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -6,26 +6,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import com.masters.funk.tabs.models.Person;
+import com.masters.funk.tabs.R;
+import com.masters.funk.tabs.models.Tab;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Adapter for the catalog page
  */
-public class CatalogAdapter extends ArrayAdapter<Person> {
+public class CardAdapter extends ArrayAdapter<Tab> {
 
-  private ArrayList<Person> persons;
+  private ArrayList<Tab> tabs;
 
-  public CatalogAdapter(Context context, int resource, List<Person> objects) {
+  public CardAdapter(Context context, int resource, List<Tab> objects) {
     super(context, resource, objects);
-    this.persons = (ArrayList<Person>) objects;
+    this.tabs = (ArrayList<Tab>) objects;
   }
 
   @Override
-  public Person getItem(int position) {
-    return persons.get(position);
+  public Tab getItem(int position) {
+//    return tabs.get(position);
+    return super.getItem(super.getCount() - position - 1);
   }
 
   @Override
@@ -35,14 +39,16 @@ public class CatalogAdapter extends ArrayAdapter<Person> {
     // to inflate it basically means to render, or show, the view.
     if (v == null) {
       LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-      v = inflater.inflate(R.layout.item_tab, null);
+      v = inflater.inflate(R.layout.item, null);
     }
 
-    Person person = persons.get(position);
+    Tab tab = tabs.get(position);
 
-    if (person != null) {
+    if (tab != null) {
       TextView name = (TextView) v.findViewById(R.id.tabText);
-      name.setText(person.getName());
+      name.setText(tab.getText());
+      TextView updateTime = (TextView) v.findViewById(R.id.updateTime);
+      updateTime.setText(new SimpleDateFormat("MMM d").format(new Date(tab.getUpdateTimeMillis())));
     }
     return v;
   }

@@ -10,7 +10,7 @@ public class Person implements Parcelable {
   /**
    * Unique id of the person
    */
-  private int id;
+  private Long id;
 
   /**
    * Person's name
@@ -28,11 +28,11 @@ public class Person implements Parcelable {
    */
   private byte[] photo;
 
-  public int getId() {
+  public long getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(long id) {
     this.id = id;
   }
 
@@ -64,7 +64,7 @@ public class Person implements Parcelable {
    * Create an empty person (mainly for database)
    */
   public Person() {
-    this.id = -1;
+    this.id = -1L;
     this.name = "";
     this.catchup = 0;
     this.photo = null;
@@ -77,7 +77,7 @@ public class Person implements Parcelable {
    * @param catchup catch up setting for the person
    * @param photo photo of the person
    */
-  public Person(int id, String name, int catchup, byte[] photo) {
+  public Person(long id, String name, int catchup, byte[] photo) {
     this.id = id;
     this.name = name;
     this.catchup = catchup;
@@ -85,7 +85,7 @@ public class Person implements Parcelable {
   }
 
   public Person(Parcel in) {
-    this.id = in.readInt();
+    this.id = in.readLong();
     this.name = in.readString();
     this.catchup = in.readInt();
     if (in.readInt() != 0) {
@@ -102,7 +102,7 @@ public class Person implements Parcelable {
 
   @Override
   public void writeToParcel(Parcel dest, int flags) {
-    dest.writeInt(id);
+    dest.writeLong(id);
     dest.writeString(name);
     dest.writeInt(catchup);
     // cannot read a null byte array so store the byte array length
