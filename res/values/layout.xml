@@ -4,4 +4,5 @@
   <dimen name="margin">4dp</dimen>
   <dimen name="picSize">100dp</dimen>
   <dimen name="nameSize">18sp</dimen>
+  <dimen name="catchSize">48dp</dimen>
 </resources>
