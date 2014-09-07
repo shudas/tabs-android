@@ -5,7 +5,7 @@
           android:versionName="1.0">
   <uses-sdk android:minSdkVersion="16"/>
   <application android:label="@string/app_name"
-               android:icon="@drawable/ic_launcher"
+               android:icon="@drawable/launcher_04"
                android:theme="@android:style/Theme.Holo.Light">
     <activity android:name=".CatalogActivity">
       <intent-filter>
@@ -26,5 +26,6 @@
               android:name="android.support.PARENT_ACTIVITY"
               android:value="com.masters.funk.CardActivity" />
     </activity>
+    <receiver android:name=".helpers.TimeAlarm" />
   </application>
 </manifest>

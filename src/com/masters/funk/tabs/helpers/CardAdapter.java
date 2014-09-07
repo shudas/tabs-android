@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.masters.funk.tabs.R;
 import com.masters.funk.tabs.models.Tab;
@@ -49,6 +50,15 @@ public class CardAdapter extends ArrayAdapter<Tab> {
       name.setText(tab.getText());
       TextView updateTime = (TextView) v.findViewById(R.id.updateTime);
       updateTime.setText(new SimpleDateFormat("MMM d").format(new Date(tab.getUpdateTimeMillis())));
+      ImageView img = (ImageView) v.findViewById(R.id.tabIcon);
+      try {
+        img.setImageResource(getContext().getResources()
+                               .getIdentifier(tab.getTabIcon(), "drawable", getContext().getPackageName()));
+      } catch (Exception e) {
+        img.setImageResource(R.drawable.tabi_puzzle);
+        e.printStackTrace();
+      }
+
     }
     return v;
   }

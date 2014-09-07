@@ -2,6 +2,7 @@ package com.masters.funk.tabs.helpers;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -22,8 +23,10 @@ public class ImageAdapter extends BaseAdapter {
     return mThumbIds.length;
   }
 
+  @Override
   public Object getItem(int position) {
-    return null;
+    Log.d("POS GET ITEM: ", String.valueOf(position));
+    return (position < mThumbIds.length && position >= 0) ? mThumbIds[position] : null;
   }
 
   public long getItemId(int position) {

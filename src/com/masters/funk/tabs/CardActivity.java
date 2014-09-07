@@ -1,8 +1,14 @@
 package com.masters.funk.tabs;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.ListActivity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,14 +20,18 @@ import android.widget.EditText;
 import android.widget.Toast;
 import com.masters.funk.tabs.helpers.CardAdapter;
 import com.masters.funk.tabs.helpers.DatabaseHelper;
+import com.masters.funk.tabs.helpers.TimeAlarm;
 import com.masters.funk.tabs.models.Person;
 import com.masters.funk.tabs.models.Tab;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class CardActivity extends ListActivity {
 
+  private static final int CODE = 0;
+  public static final String PERSON_NAME = "NAME";
   private List<Tab> tabs = new ArrayList<Tab>();
   private CardAdapter adapter;
   private DatabaseHelper db;
@@ -59,29 +69,36 @@ public class CardActivity extends ListActivity {
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case R.id.action_catchup:
-        // DialogFragment.show() will take care of adding the fragment
-        // in a transaction.  We also want to remove any currently showing
-        // dialog, so make our own transaction and take care of that here.
         Toast.makeText(this, "Catch up selected!", Toast.LENGTH_SHORT).show();
+        // Todo: Change this time
+        createScheduledNotification(10);
         return true;
       default:
         return super.onOptionsItemSelected(item);
     }
   }
 
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (resultCode == RESULT_OK) {
+      Tab tab = new Tab();
+      tab.setText(data.getStringExtra(NewTabActivity.TAB_TEXT));
+      tab.setUpdateTimeMillis(System.currentTimeMillis());
+      tab.setPersonId(person.getId());
+      // use puzzle drawable by default
+      tab.setTabIcon(getResources().getResourceEntryName(data.getIntExtra(NewTabActivity.TABICON_PICK,
+                                                                          R.drawable.tabi_puzzle)));
+      Log.d("TAB", tab.getPersonId() + " " + tab.getTabIcon());
+      db.createTab(tab);
+      adapter.insert(tab, 0);
+      adapter.notifyDataSetChanged();
+    }
+  }
+
   public void newTabOnClick(View view) {
     Intent intent = new Intent(this, NewTabActivity.class);
-    startActivity(intent);
-//    DialogFragment newFragment =
-//      new NewPersonDialogFragment(getString(R.string.add_tab_dialog_title),
-//                                  R.layout.dialog_new_tab,
-//                                  new DialogInterface.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(DialogInterface dialog, int which) {
-//                                      newTabOnClick(dialog, which);
-//                                    }
-//                                  });
-//    newFragment.show(getFragmentManager(), "new person");
+    startActivityForResult(intent, 0);
   }
 
   public void catchUpOnClick(DialogInterface dialog, int which) {
@@ -91,18 +108,33 @@ public class CardActivity extends ListActivity {
     }
   }
 
-  public void newTabOnClick(DialogInterface dialog, int which) {
-    // store to db if pos, otherwise, close dialog
-    if (which == DialogInterface.BUTTON_POSITIVE) {
-      EditText name = (EditText) ((AlertDialog) dialog).findViewById(R.id.newTabText);
-      Tab tab = new Tab();
-      tab.setText(name.getText().toString());
-      tab.setUpdateTimeMillis(System.currentTimeMillis());
-      tab.setPersonId(person.getId());
-      Log.d("NEW TAB ON CLICK", name.getText().toString());
-      db.createTab(tab);
-      adapter.insert(tab, 0);
-      adapter.notifyDataSetChanged();
-    }
+  private void createScheduledNotification(int secs)
+  {
+    // Get new calendar object and set the date to now
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTimeInMillis(System.currentTimeMillis());
+    // Add defined amount of days to the date
+    calendar.add(Calendar.SECOND, secs);
+    Log.d("Calendar ", String.valueOf(calendar.getTimeInMillis()));
+
+    // Every scheduled intent needs a different ID, else it is just executed once
+    int id = (int) System.currentTimeMillis();
+
+    // Prepare the intent which should be launched at the date
+    Intent intent = new Intent(this, TimeAlarm.class);
+    intent.putExtra(PERSON_NAME, person.getName());
+
+    PendingIntent pendingIntent =
+      PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+    // Register the alert in the system. You have the option to define if the device has to wake up on the alert or not
+    AlarmManager alarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
+    alarmMgr.cancel(pendingIntent);
+
+    alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                          30 * 10000,
+                          pendingIntent);
+
   }
+
 }

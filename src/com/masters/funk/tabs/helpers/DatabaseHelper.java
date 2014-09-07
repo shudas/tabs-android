@@ -161,7 +161,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
    */
   public List<Tab> getTabsPerPerson(long personId) {
     List<Tab> tabs = new ArrayList<Tab>();
-    String selectQuery = "SELECT  * FROM " + TABLE_TAB + " WHERE " + KEY_PEOPLE_ID + " = " + personId;
+    String selectQuery = "SELECT  * FROM " + TABLE_TAB + " WHERE " + KEY_PEOPLE_ID + " = " + personId
+      + " ORDER BY " + KEY_UPDATE_TIME + " DESC";
 
     Log.d(LOG, selectQuery);
 
