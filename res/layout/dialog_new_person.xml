@@ -6,10 +6,12 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
   <ImageView
+          android:id="@+id/newPersonPic"
           android:layout_width="@dimen/catchSize"
           android:layout_height="@dimen/catchSize"
           android:src="@drawable/face"/>
   <EditText
+          android:id="@+id/newPersonName"
           android:layout_width="fill_parent"
           android:layout_height="wrap_content"
           android:hint="@string/add_person_hint"/>

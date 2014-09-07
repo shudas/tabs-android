@@ -4,13 +4,13 @@
         android:padding="@dimen/marginTop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    <ImageView
-            android:id="@+id/tabIcon"
-            android:src="@drawable/ic_launcher"
-            android:layout_alignParentLeft="true"
-            android:layout_marginRight="@dimen/margin"
-            android:layout_width="@dimen/catchSize"
-            android:layout_height="@dimen/catchSize"/>
+  <ImageView
+          android:id="@+id/tabIcon"
+          android:src="@drawable/face"
+          android:layout_alignParentLeft="true"
+          android:layout_marginRight="@dimen/margin"
+          android:layout_width="@dimen/catchSize"
+          android:layout_height="@dimen/catchSize"/>
   <TextView
           android:text="Sept. 31"
           android:id="@+id/updateTime"

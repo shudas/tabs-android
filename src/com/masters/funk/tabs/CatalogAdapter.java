@@ -18,7 +18,6 @@ public class CatalogAdapter extends ArrayAdapter<Person> {
 
   private ArrayList<Person> persons;
 
-
   public CatalogAdapter(Context context, int resource, List<Person> objects) {
     super(context, resource, objects);
     this.persons = (ArrayList<Person>) objects;

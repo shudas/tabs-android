@@ -80,6 +80,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
    * @param tab
    */
   public void createTab(Tab tab) {
+    Log.d(LOG, "GOt called");
     SQLiteDatabase db = this.getWritableDatabase();
     ContentValues values = new ContentValues();
     values.put(KEY_TEXT, tab.getText());
@@ -89,6 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // insert row
     db.insert(TABLE_TAG, null, values);
+    db.close();
   }
 
   /**
@@ -117,7 +119,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     tab.setText((c.getString(c.getColumnIndex(KEY_TEXT))));
     tab.setTabIcon(c.getString(c.getColumnIndex(KEY_ICON)));
     tab.setUpdateTimeMillis(c.getInt(c.getColumnIndex(KEY_PEOPLE_ID)));
-
+    c.close();
+//    db.close();
     return tab;
   }
 
@@ -144,6 +147,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         tab.setUpdateTimeMillis(c.getInt(c.getColumnIndex(KEY_PEOPLE_ID)));
       } while (c.moveToNext());
     }
+    c.close();
+    db.close();
     return tabs;
   }
 
@@ -170,12 +175,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
   public void deleteTab(long tabId) {
     SQLiteDatabase db = this.getWritableDatabase();
     db.delete(TABLE_TAG, KEY_ID + " = ?", new String[] { String.valueOf(tabId) });
+    db.close();
   }
 
   /**
    * Creating a Person
    */
   public void createPerson(Person person) {
+    Log.d(LOG, "Create person called");
     SQLiteDatabase db = this.getWritableDatabase();
     ContentValues values = new ContentValues();
     values.put(KEY_NAME, person.getName());
@@ -184,6 +191,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // insert row
     db.insert(TABLE_PEOPLE, null, values);
+    Log.d(LOG, "Name: " + person.getName() + " Catchup: " + person.getCatchup());
+    db.close();
   }
 
   /**
@@ -210,7 +219,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     person.setName((c.getString(c.getColumnIndex(KEY_NAME))));
     person.setCatchup(c.getInt(c.getColumnIndex(KEY_CATCHUP)));
     person.setPhoto(c.getBlob(c.getColumnIndex(KEY_PHOTO)));
-
+    c.close();
+//    db.close();
     return person;
   }
 
@@ -219,6 +229,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
    * @return List of all Persons
    */
   public List<Person> getAllPersons() {
+    Log.d(LOG, "Got getAllPersons");
     List<Person> persons = new ArrayList<Person>();
     String selectQuery = "SELECT  * FROM " + TABLE_PEOPLE;
 
@@ -235,8 +246,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         person.setName((c.getString(c.getColumnIndex(KEY_NAME))));
         person.setCatchup(c.getInt(c.getColumnIndex(KEY_CATCHUP)));
         person.setPhoto(c.getBlob(c.getColumnIndex(KEY_PHOTO)));
+        persons.add(person);
+        Log.d(LOG, "GET ALL NAME: " + person.getName());
       } while (c.moveToNext());
     }
+//    c.close();
+    Log.d(LOG, String.valueOf(persons.size()));
+//    db.close();
     return persons;
   }
 
@@ -263,6 +279,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
   public void deletePerson(long personId) {
     SQLiteDatabase db = this.getWritableDatabase();
     db.delete(TABLE_PEOPLE, KEY_ID + " = ?", new String[] { String.valueOf(personId) });
+    db.close();
   }
 
   /**

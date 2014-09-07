@@ -64,7 +64,10 @@ public class Person implements Parcelable {
    * Create an empty person (mainly for database)
    */
   public Person() {
-
+    this.id = -1;
+    this.name = "";
+    this.catchup = 0;
+    this.photo = null;
   }
 
   /**

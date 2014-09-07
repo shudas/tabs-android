@@ -12,19 +12,13 @@
     <!--Person Image-->
     <ImageView
             android:id="@+id/personImg"
-            android:src="@drawable/ic_launcher"
+            android:src="@drawable/face"
             android:layout_width="@dimen/picSize"
             android:layout_height="@dimen/picSize"
             android:layout_centerInParent="true"
             android:layout_marginBottom="@dimen/margin"
             android:contentDescription="@string/image_desc"/>
     <!--Catch up Image-->
-    <ImageView
-            android:src="@drawable/ic_launcher"
-            android:layout_width="@dimen/catchSize"
-            android:layout_height="@dimen/catchSize"
-            android:layout_alignParentRight="true"
-            android:contentDescription="@string/catchup_desc"/>
   </RelativeLayout>
   <!--Name-->
   <!--Tags-->
@@ -52,7 +46,7 @@
           </LinearLayout>
   <!--Catch up image-->
   <ImageView
-          android:src="@drawable/ic_launcher"
+          android:src="@drawable/new_tab"
           android:layout_margin="@dimen/margin"
           android:layout_width="48dp"
           android:layout_height="48dp"
