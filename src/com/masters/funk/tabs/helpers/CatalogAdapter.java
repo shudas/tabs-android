@@ -1,10 +1,13 @@
 package com.masters.funk.tabs.helpers;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.masters.funk.tabs.R;
 import com.masters.funk.tabs.models.Person;
@@ -46,6 +49,14 @@ public class CatalogAdapter extends ArrayAdapter<Person> {
       name.setText(person.getName());
       name.setTextSize(18);
       v.findViewById(R.id.updateTime).setVisibility(View.GONE);
+      ImageView img = (ImageView) v.findViewById(R.id.icon);
+      try {
+        Bitmap bmp = BitmapFactory.decodeByteArray(person.getPhoto(), 0, person.getPhoto().length);
+        img.setImageBitmap(bmp);
+      } catch (Exception e) {
+        // use face by default
+        img.setImageResource(R.drawable.face);
+      }
     }
     return v;
   }

@@ -10,7 +10,7 @@ public class Person implements Parcelable {
   /**
    * Unique id of the person
    */
-  private Long id;
+  private long id;
 
   /**
    * Person's name
@@ -22,6 +22,11 @@ public class Person implements Parcelable {
    * to remind the user to catch up with the person.
    */
   private int catchup;
+
+  /**
+   * The last time this person was updated. This can be used to sort the People page.
+   */
+  private long updateTime;
 
   /**
    * Bitmap of the user's photo.
@@ -60,14 +65,24 @@ public class Person implements Parcelable {
     this.photo = photo;
   }
 
+  public long getUpdateTime() {
+    return updateTime;
+  }
+
+  public void setUpdateTime(long updateTime) {
+    this.updateTime = updateTime;
+  }
+
+
   /**
    * Create an empty person (mainly for database)
    */
   public Person() {
-    this.id = -1L;
+    this.id = 0L;
     this.name = "";
     this.catchup = 0;
     this.photo = null;
+    this.updateTime = System.currentTimeMillis();
   }
 
   /**
@@ -77,17 +92,19 @@ public class Person implements Parcelable {
    * @param catchup catch up setting for the person
    * @param photo photo of the person
    */
-  public Person(long id, String name, int catchup, byte[] photo) {
+  public Person(long id, String name, int catchup, byte[] photo, long updateTime) {
     this.id = id;
     this.name = name;
     this.catchup = catchup;
     this.photo = photo;
+    this.updateTime = updateTime;
   }
 
   public Person(Parcel in) {
     this.id = in.readLong();
     this.name = in.readString();
     this.catchup = in.readInt();
+    this.updateTime = in.readLong();
     if (in.readInt() != 0) {
       in.readByteArray(photo);
     } else {
@@ -105,6 +122,7 @@ public class Person implements Parcelable {
     dest.writeLong(id);
     dest.writeString(name);
     dest.writeInt(catchup);
+    dest.writeLong(updateTime);
     // cannot read a null byte array so store the byte array length
     // which we can check when we read the parcel
     if (photo == null) {
@@ -113,6 +131,11 @@ public class Person implements Parcelable {
       dest.writeInt(photo.length);
       dest.writeByteArray(photo);
     }
+  }
+
+  @Override
+  public String toString() {
+    return "Name: " + name + " ID: " + id + " Catchup: " + catchup + " Update Time: " + updateTime;
   }
 
   @SuppressWarnings("unchecked")

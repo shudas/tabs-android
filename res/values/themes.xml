@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- the theme applied to the application or activity -->
+  <style name="TabTheme"
+         parent="@android:style/Theme.Holo.Light.DarkActionBar">
+    <item name="android:actionBarStyle">@style/CustomActionBar</item>
+  </style>
+
+  <!-- ActionBar styles -->
+  <style name="CustomActionBar"
+         parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+    <item name="android:background">@color/deep</item>
+  </style>
+
+  <!--Dialog style-->
+  <style name="cust_dialog" parent="android:Theme.Holo.Light.Dialog">
+    <item name="android:windowBackground">@style/dialog_title_style</item>
+  </style>
+
+  <!--Dialog title bar style-->
+  <style name="dialog_title_style" parent="android:Widget.TextView">
+    <item name="android:background">@color/deep</item>
+  </style>
+</resources>

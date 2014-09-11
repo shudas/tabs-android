@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="salmon">#fff25252</color>
+  <color name="sherbert">#fff27649</color>
+  <color name="persimmon">#fff27649</color>
+  <color name="bus">#fff29d35</color>
+  <color name="shallow">#ff14a697</color>
+  <color name="deep">#ff334d5c</color>
+</resources>

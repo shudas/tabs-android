@@ -6,7 +6,7 @@
   <uses-sdk android:minSdkVersion="16"/>
   <application android:label="@string/app_name"
                android:icon="@drawable/launcher_04"
-               android:theme="@android:style/Theme.Holo.Light">
+               android:theme="@style/TabTheme">
     <activity android:name=".CatalogActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -20,12 +20,7 @@
               android:name="android.support.PARENT_ACTIVITY"
               android:value="com.masters.funk.CatalogActivity" />
     </activity>
-    <activity android:name=".NewTabActivity"
-              android:parentActivityName=".CardActivity">
-      <meta-data
-              android:name="android.support.PARENT_ACTIVITY"
-              android:value="com.masters.funk.CardActivity" />
-    </activity>
+    <activity android:name=".helpers.ImageCropper"/>
     <receiver android:name=".helpers.TimeAlarm" />
   </application>
 </manifest>

@@ -5,6 +5,8 @@ import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -13,11 +15,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import com.masters.funk.tabs.helpers.CatalogAdapter;
 import com.masters.funk.tabs.helpers.DatabaseHelper;
 import com.masters.funk.tabs.models.Person;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -27,7 +31,7 @@ public class CatalogActivity extends ListActivity {
 
   public static final String EXTRA_PERSON = "person";
   private static final String EXTRA_ALL_PEOPLE = "allPeople";
-  private static final String LOG = CatalogActivity.class.getSimpleName();
+  private static final int NEW_PERSON_ACTIVITY = 0;
 
   private ArrayList<Person> persons = new ArrayList<Person>();
   private CatalogAdapter adapter;
@@ -43,13 +47,16 @@ public class CatalogActivity extends ListActivity {
     setContentView(R.layout.activity_catalog);
     setTitle(getString(R.string.catalog_title));
     db = new DatabaseHelper(this);
+
+    registerForContextMenu(getListView());
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
     persons = (ArrayList<Person>) db.getAllPersons();
-    for (Person p : persons) {
-      Log.d(LOG, p.getName());
-    }
     adapter = new CatalogAdapter(this, R.layout.item, persons);
     setListAdapter(adapter);
-    registerForContextMenu(getListView());
   }
 
   @Override
@@ -106,11 +113,17 @@ public class CatalogActivity extends ListActivity {
     // store to db if pos, otherwise, close dialog
     if (which == DialogInterface.BUTTON_POSITIVE) {
       EditText name = (EditText) ((AlertDialog) dialog).findViewById(R.id.newPersonName);
+      ImageView imageView = (ImageView) ((AlertDialog) dialog).findViewById(R.id.newPersonPic);
       Person person = new Person();
       person.setName(name.getText().toString());
+      Bitmap bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+      ByteArrayOutputStream stream = new ByteArrayOutputStream();
+      bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+      person.setPhoto(stream.toByteArray());
       // set the adapter person's unique id
       long uniqueId = db.createPerson(person);
       person.setId(uniqueId);
+      Log.i("NEW PERSON ON CLICK", person.toString());
       adapter.insert(person, 0);
       adapter.notifyDataSetChanged();
     }
@@ -121,7 +134,7 @@ public class CatalogActivity extends ListActivity {
     // in a transaction.  We also want to remove any currently showing
     // dialog, so make our own transaction and take care of that here.
     DialogFragment newFragment =
-      new CustomDialogFragment(getString(R.string.add_person_dialog_title),
+      new NewPersonActivity(getString(R.string.add_person_dialog_title),
                                R.layout.dialog_new_person,
                                new DialogInterface.OnClickListener() {
                                  @Override

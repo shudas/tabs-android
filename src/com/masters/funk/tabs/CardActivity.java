@@ -2,7 +2,6 @@ package com.masters.funk.tabs;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
@@ -14,11 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.RadioGroup;
-import android.widget.SeekBar;
-import android.widget.Toast;
 import com.masters.funk.tabs.helpers.CardAdapter;
 import com.masters.funk.tabs.helpers.DatabaseHelper;
 import com.masters.funk.tabs.helpers.TimeAlarm;
@@ -35,7 +30,8 @@ public class CardActivity extends ListActivity {
   public static final String PERSON_NAME = "NAME";
   private List<Tab> tabs = new ArrayList<Tab>();
   private CardAdapter adapter;
-  private DatabaseHelper db;
+  private DatabaseHelper tabDb;
+  private DatabaseHelper personDb;
   private Person person;
   /**
    * Called when the activity is first created.
@@ -54,8 +50,9 @@ public class CardActivity extends ListActivity {
       e.printStackTrace();
     }
 
-    db = new DatabaseHelper(this);
-    tabs = db.getTabsPerPerson(person.getId());
+    personDb = new DatabaseHelper(this);
+    tabDb = new DatabaseHelper(this);
+    tabs = tabDb.getTabsPerPerson(person.getId());
     adapter = new CardAdapter(this, R.layout.item, tabs);
     setListAdapter(adapter);
     registerForContextMenu(getListView());
@@ -82,7 +79,9 @@ public class CardActivity extends ListActivity {
     switch (item.getItemId()) {
       case R.id.deleteContext:
         Tab tab = adapter.getItem(info.position);
-        db.deleteTab(tab.getId());
+        Log.i("INFO POS", String.valueOf(info.position));
+        Log.i("Tab deleted", tab.getText() + " " + tab.getId());
+        tabDb.deleteTab(tab.getId());
         adapter.remove(tab);
         return true;
       default:
@@ -111,15 +110,19 @@ public class CardActivity extends ListActivity {
     if (resultCode == RESULT_OK) {
       Tab tab = new Tab();
       tab.setText(data.getStringExtra(NewTabActivity.TAB_TEXT));
-      tab.setUpdateTimeMillis(System.currentTimeMillis());
+      long updateTime = System.currentTimeMillis();
+      tab.setUpdateTimeMillis(updateTime);
       tab.setPersonId(person.getId());
       // use puzzle drawable by default
       tab.setTabIcon(getResources().getResourceEntryName(data.getIntExtra(NewTabActivity.TABICON_PICK,
                                                                           R.drawable.tabi_puzzle)));
-      Log.d("TAB", tab.getPersonId() + " " + tab.getTabIcon());
-      db.createTab(tab);
+      Log.i("TAB", tab.getPersonId() + " " + tab.getTabIcon() + " " + tab.getUpdateTimeMillis());
+      tab.setId(tabDb.createTab(tab));
       adapter.insert(tab, 0);
       adapter.notifyDataSetChanged();
+      // update person table with new update time.
+      person.setUpdateTime(updateTime);
+      personDb.updatePerson(person);
     }
   }
 
@@ -160,14 +163,15 @@ public class CardActivity extends ListActivity {
   DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
     @Override
     public void onClick(DialogInterface dialog, int which) {
-      // store to db if pos, otherwise, close dialog
+      // store to tabDb if pos, otherwise, close dialog
       if (which == DialogInterface.BUTTON_POSITIVE) {
         RadioGroup radios = (RadioGroup) ((AlertDialog) dialog).findViewById(R.id.catchup_radios);
         person.setCatchup(radios.getCheckedRadioButtonId());
         // set the adapter person's unique id
-        db.updatePerson(person);
+        tabDb.updatePerson(person);
+        // notifications
         if (radios.getCheckedRadioButtonId() != R.id.catchup_rad_3) {
-          createScheduledNotification(15);
+//          createScheduledNotification(15);
         }
       }
     }

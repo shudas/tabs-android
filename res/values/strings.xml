@@ -17,4 +17,7 @@
   <string name="catchup_rad_3">Never</string>
   <string name="long_string">This is a really long string. This will check how stuff performs with long strings.
     Long strings are going to be annoying for users to use. I am a long string. I am long. Like a you know what</string>
+  <string name="title_activity_main">Choose Image</string>
+  <string name="pick">Pick</string>
+  <string name="crop">Crop</string>
 </resources>

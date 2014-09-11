@@ -3,9 +3,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_margin="@dimen/marginTop">
-
+              android:layout_height="match_parent">
+  <LinearLayout android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/marginTop">
   <EditText
           android:id="@+id/newTabText"
           android:layout_width="match_parent"
@@ -27,6 +29,7 @@
             android:listSelector="@android:color/holo_blue_dark"
             android:gravity="center"/>
 
+  </LinearLayout>
   <LinearLayout
           style="?android:attr/buttonBarStyle"
           android:layout_width="match_parent"

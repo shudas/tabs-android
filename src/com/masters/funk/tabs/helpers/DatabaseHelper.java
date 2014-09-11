@@ -20,8 +20,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
   // Logcat tag
   private static final String LOG = "DatabaseHelper";
 
-  // Database Version
-  private static final int DATABASE_VERSION = 1;
+  // Database Version.
+  private static final int DATABASE_VERSION = 2;
 
   // Database Name
   private static final String DATABASE_NAME = "tabsManager";
@@ -32,6 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
   // Common column names
   private static final String KEY_ID = "id";
+  private static final String KEY_UPDATE_TIME = "update_time";
 
   // PEOPLE Table - column names
   private static final String KEY_NAME = "name";
@@ -41,13 +42,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
   // TABS Table - column names
   private static final String KEY_TEXT = "text";
   private static final String KEY_ICON = "icon";
-  private static final String KEY_UPDATE_TIME = "update_time";
   private static final String KEY_PEOPLE_ID = "people_id";
 
   // PEOPLE Table CREATE Statement
   private static final String CREATE_TABLE_PEOPLE = "CREATE TABLE "
-    + TABLE_PEOPLE + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME
-    + " TEXT," + KEY_CATCHUP + " INTEGER," + KEY_PHOTO + " BLOB" + ")";
+    + TABLE_PEOPLE + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
+    + KEY_CATCHUP + " INTEGER," + KEY_UPDATE_TIME + " INTEGER," + KEY_PHOTO + " BLOB" + ")";
 
   private static final String CREATE_TABLE_TABS = "CREATE TABLE "
     + TABLE_TAB + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TEXT
@@ -79,7 +79,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
    *
    * @param tab
    */
-  public void createTab(Tab tab) {
+  public long createTab(Tab tab) {
     Log.d(LOG, "Create Tab got called");
     Log.d(LOG, "Create Table statment: " + CREATE_TABLE_TABS);
     Log.d(LOG, "Text " + tab.getText() + " UpdateTime " + tab.getUpdateTimeMillis() + " People Id " + tab.getPersonId());
@@ -89,10 +89,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     values.put(KEY_ICON, tab.getTabIcon());
     values.put(KEY_UPDATE_TIME, tab.getUpdateTimeMillis());
     values.put(KEY_PEOPLE_ID, tab.getPersonId());
-
+    Log.i("Create Tab UPDATE TIME: ", values.getAsString(KEY_UPDATE_TIME));
     // insert row
-    db.insert(TABLE_TAB, null, values);
-    db.close();
+    return db.insert(TABLE_TAB, null, values);
+//    db.close();
   }
 
   /**
@@ -105,11 +105,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     SQLiteDatabase db = this.getReadableDatabase();
     String selectQuery = "SELECT  * FROM " + TABLE_TAB + " WHERE "
       + KEY_ID + " = " + tabId;
-
     Log.d(LOG, selectQuery);
 
     Cursor c = db.rawQuery(selectQuery, null);
-
     if (c != null) {
       c.moveToFirst();
     } else {
@@ -117,12 +115,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     Tab tab = new Tab();
-    tab.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+    tab.setId(c.getLong(c.getColumnIndex(KEY_ID)));
     tab.setText((c.getString(c.getColumnIndex(KEY_TEXT))));
     tab.setTabIcon(c.getString(c.getColumnIndex(KEY_ICON)));
-    tab.setUpdateTimeMillis(c.getInt(c.getColumnIndex(KEY_PEOPLE_ID)));
+    tab.setUpdateTimeMillis(c.getLong(c.getColumnIndex(KEY_UPDATE_TIME)));
+    tab.setPersonId(c.getLong(c.getColumnIndex(KEY_PEOPLE_ID)));
+    Log.i("Tab UPDATE TIME: ", String.valueOf(tab.getUpdateTimeMillis()));
     c.close();
-//    db.close();
     return tab;
   }
 
@@ -143,10 +142,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     if (c.moveToFirst()) {
       do {
         Tab tab = new Tab();
-        tab.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+        tab.setId(c.getLong(c.getColumnIndex(KEY_ID)));
         tab.setText((c.getString(c.getColumnIndex(KEY_TEXT))));
         tab.setTabIcon(c.getString(c.getColumnIndex(KEY_ICON)));
-        tab.setUpdateTimeMillis(c.getInt(c.getColumnIndex(KEY_PEOPLE_ID)));
+        tab.setUpdateTimeMillis(c.getLong(c.getColumnIndex(KEY_UPDATE_TIME)));
+        tab.setPersonId(c.getLong(c.getColumnIndex(KEY_PEOPLE_ID)));
         tabs.add(tab);
       } while (c.moveToNext());
     }
@@ -173,11 +173,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     if (c.moveToFirst()) {
       do {
         Tab tab = new Tab();
-        tab.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+        tab.setId(c.getLong(c.getColumnIndex(KEY_ID)));
         tab.setText((c.getString(c.getColumnIndex(KEY_TEXT))));
         tab.setTabIcon(c.getString(c.getColumnIndex(KEY_ICON)));
-        tab.setUpdateTimeMillis(c.getInt(c.getColumnIndex(KEY_PEOPLE_ID)));
+        tab.setUpdateTimeMillis(c.getLong(c.getColumnIndex(KEY_UPDATE_TIME)));
+        tab.setPersonId(c.getLong(c.getColumnIndex(KEY_PEOPLE_ID)));
         tabs.add(tab);
+        Log.i("Tab UPDATE TIME: ", String.valueOf(tab.getUpdateTimeMillis()));
       } while (c.moveToNext());
     }
     c.close();
@@ -217,14 +219,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
   public long createPerson(Person person) {
     Log.d(LOG, "Create person called");
     SQLiteDatabase db = this.getWritableDatabase();
-    ContentValues values = new ContentValues();
-    values.put(KEY_NAME, person.getName());
-    values.put(KEY_CATCHUP, person.getCatchup());
-    values.put(KEY_PHOTO, person.getPhoto());
-
     // insert row
-    long id = db.insert(TABLE_PEOPLE, null, values);
-    Log.d(LOG, "Name: " + person.getName() + " Catchup: " + person.getCatchup());
+    long id = db.insert(TABLE_PEOPLE, null, valuesFromPerson(person));
     db.close();
     return id;
   }
@@ -247,12 +243,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     } else {
       return null;
     }
-
-    Person person = new Person();
-    person.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-    person.setName((c.getString(c.getColumnIndex(KEY_NAME))));
-    person.setCatchup(c.getInt(c.getColumnIndex(KEY_CATCHUP)));
-    person.setPhoto(c.getBlob(c.getColumnIndex(KEY_PHOTO)));
+    Person person = personFromCursor(c);
     c.close();
 //    db.close();
     return person;
@@ -265,7 +256,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
   public List<Person> getAllPersons() {
     Log.d(LOG, "Got getAllPersons");
     List<Person> persons = new ArrayList<Person>();
-    String selectQuery = "SELECT  * FROM " + TABLE_PEOPLE;
+    String selectQuery = "SELECT  * FROM " + TABLE_PEOPLE + " ORDER BY " + KEY_UPDATE_TIME + " DESC";
 
     Log.d(LOG, selectQuery);
 
@@ -275,12 +266,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // looping through all rows and adding to list
     if (c.moveToFirst()) {
       do {
-        Person person = new Person();
-        person.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-        person.setName((c.getString(c.getColumnIndex(KEY_NAME))));
-        person.setCatchup(c.getInt(c.getColumnIndex(KEY_CATCHUP)));
-        person.setPhoto(c.getBlob(c.getColumnIndex(KEY_PHOTO)));
-        persons.add(person);
+        persons.add(personFromCursor(c));
       } while (c.moveToNext());
     }
 //    c.close();
@@ -296,14 +282,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
    */
   public int updatePerson(Person person) {
     SQLiteDatabase db = this.getWritableDatabase();
-
-    ContentValues values = new ContentValues();
-    values.put(KEY_NAME, person.getName());
-    values.put(KEY_CATCHUP, person.getCatchup());
-    values.put(KEY_PHOTO, person.getPhoto());
-
+    Log.i("DATABASE: ", "Database updated: " + person.toString());
     // updating row
-    return db.update(TABLE_PEOPLE, values, KEY_ID + " = ?", new String[] { String.valueOf(person.getId()) });
+    return db.update(TABLE_PEOPLE, valuesFromPerson(person), KEY_ID + " = ?",
+                     new String[] { String.valueOf(person.getId()) });
   }
 
   /**
@@ -316,12 +298,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
   }
 
   /**
-   * Close the database.
+   * Create ContentValues object from a Person
+   *
+   * @param person
+   * @return
    */
-  public void closeDB() {
-    SQLiteDatabase db = this.getReadableDatabase();
-    if (db != null && db.isOpen()) {
-      db.close();
-    }
+  private ContentValues valuesFromPerson(Person person) {
+    ContentValues values = new ContentValues();
+    values.put(KEY_NAME, person.getName());
+    values.put(KEY_CATCHUP, person.getCatchup());
+    values.put(KEY_PHOTO, person.getPhoto());
+    values.put(KEY_UPDATE_TIME, person.getUpdateTime());
+    return values;
+  }
+
+  private Person personFromCursor(Cursor c) {
+    Person person = new Person();
+    person.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+    person.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+    person.setCatchup(c.getInt(c.getColumnIndex(KEY_CATCHUP)));
+    person.setPhoto(c.getBlob(c.getColumnIndex(KEY_PHOTO)));
+    person.setUpdateTime(c.getLong(c.getColumnIndex(KEY_UPDATE_TIME)));
+    return person;
   }
 }
